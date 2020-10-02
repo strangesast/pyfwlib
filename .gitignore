@@ -2,3 +2,5 @@ MANIFEST
 dist/
 env/
 build/
+fwlib.cpython*-linux-gnu.so
+fwlib.egg-info/

@@ -66,25 +66,27 @@ static PyObject *rdcncid(PyObject *self, PyObject *args) {
 static PyObject *rdaxisname(PyObject *self, PyObject *args) {
   PyObject *m;
 
-  const int num = 1;
-  short len = MAX_AXIS;
+  // const int num = 1;
+  // short len = MAX_AXIS;
   short axisCount = MAX_AXIS;
   char axis_id[10];
-  char axis_name[20];
+  // char axis_name[20];
   char axis_suffix[10];
-  bool hasAxisData;
+  // bool hasAxisData;
   short count;
   short inprec[MAX_AXIS];
   short outprec[MAX_AXIS];
-  short types[] = {1};
+  // short types[] = {1};
   ODBAXISNAME axes[MAX_AXIS];
-  ODBAXDT *axisData;
+  // ODBAXDT *axisData;
 
   if (!PyArg_ParseTuple(args, "")) return NULL;
 
+  /*
   axisData = calloc(MAX_AXIS, sizeof(ODBAXDT));
   hasAxisData =
       cnc_rdaxisdata(libh, 1, (short *)types, num, &len, axisData) == EW_OK;
+  */
 
   if (cnc_getfigure(libh, 0, &count, inprec, outprec) != EW_OK ||
       cnc_rdaxisname(libh, &axisCount, axes) != EW_OK) {
@@ -100,17 +102,18 @@ static PyObject *rdaxisname(PyObject *self, PyObject *args) {
     PyObject *d_axis_id = PyUnicode_FromString(axis_id);
     PyDict_SetItemString(d_axis, "id", d_axis_id);
 
+    PyObject *d_axis_index = PyLong_FromLong(i);
+    PyDict_SetItemString(d_axis, "index", d_axis_index);
+
     divisor = pow((long double)10.0, (long double)inprec[i]);
     PyObject *d_axis_divisor = PyFloat_FromDouble(divisor);
     PyDict_SetItemString(d_axis, "divisor", d_axis_divisor);
-
-    PyObject *d_axis_index = PyLong_FromLong(i);
-    PyDict_SetItemString(d_axis, "index", d_axis_index);
 
     sprintf(axis_suffix, "%c", axes[i].suff);
     PyObject *d_axis_suffix = PyUnicode_FromString(axis_suffix);
     PyDict_SetItemString(d_axis, "suffix", d_axis_suffix);
 
+    /* UNRELIABLE ACROSS PLATFORMS
     if (hasAxisData) {
       sprintf(axis_name, "%.4s", axisData[i].name);
       PyObject *d_axis_name = PyUnicode_FromString(axis_name);
@@ -130,9 +133,10 @@ static PyObject *rdaxisname(PyObject *self, PyObject *args) {
       PyObject *d_axis_decimal = PyLong_FromLong(axisData[i].dec);
       PyDict_SetItemString(d_axis, "decimal", d_axis_decimal);
     }
+    */
     PyTuple_SetItem(m, i, d_axis);
   }
-  free(axisData);
+  // free(axisData);
 
   return m;
 }
