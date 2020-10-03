@@ -1,5 +1,7 @@
 from contextlib import contextmanager
-import fwlib # type: ignore
+import os
+import fwlib  # type: ignore
+
 
 @contextmanager
 def get_machine_connection(machine_ip, machine_port=8193, timeout=10):
@@ -10,7 +12,12 @@ def get_machine_connection(machine_ip, machine_port=8193, timeout=10):
     finally:
         fwlib.freelibhndl()
 
-if __name__ == '__main__':
-    with get_machine_connection('localhost'):
-        res = fwlib.rdcncid()
-        print(res)
+
+if __name__ == "__main__":
+    machine_ip, machine_port = (
+        os.environ.get("MACHINE_IP", "127.0.0.1"),
+        os.environ.get("MACHINE_PORT", "8193"),
+    )
+    with get_machine_connection(machine_ip, int(machine_port)):
+        result = fwlib.rdcncid()
+        print(f"Machine's unique id is: {result.get('id')}")
