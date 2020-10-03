@@ -1,0 +1,1 @@
+-e git+https://github.com/strangesast/fanuc-python-extension@ea457e34302f7b61f9289859e9f19925716cc949#egg=fwlib
