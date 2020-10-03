@@ -1,1 +1,5 @@
-let g:ale_c_gcc_options = '-x c -Wall -I/usr/include/python3.8/'
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+    \    '*': ['remove_trailing_lines', 'trim_whitespace'],
+    \    'python': ['black']
+    \}
