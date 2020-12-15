@@ -11,7 +11,7 @@ setup(
     ext_modules=[
         Extension(
             "_fwlib",
-            sources=["fwlib_wrap.c"],
+            sources=["fwlib.i"],
             # used during linking
             library_dirs=[fwlib_dir],
             libraries=["fwlib32"],
