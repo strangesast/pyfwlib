@@ -1,5 +1,6 @@
 import fwlib
 
+
 def main():
   ip = '127.0.0.1'
   port = 8193
@@ -14,9 +15,14 @@ def main():
 
   ret, cncids = fwlib.cnc_rdcncid(libh)
 
-  ids = [cncids[0] & 0xffffffff, cncids[0] >> 32 & 0xffffffff, cncids[1] & 0xffffffff, cncids[1] >> 32 & 0xffffffff]
-  ids = '-'.join([f'{v:08x}' for v in ids])
-  print(f'machine id: {ids}')
+  #mask = 0xffffffff
+  #cncids = [cncids[0] & mask, cncids[0] >> 32 & mask, cncids[1] & mask, cncids[1] >> 32 & mask]
+  #print(cncids)
+  cncids = '-'.join([f'{v:08x}' for v in cncids])
+  print(f'machine id: {cncids}')
+
+  ret, sysinfo = fwlib.cnc_sysinfo(libh);
+  print(sysinfo)
 
   fwlib.cnc_freelibhndl(libh)
   fwlib.cnc_exitprocess()
