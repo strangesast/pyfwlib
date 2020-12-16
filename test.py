@@ -1,11 +1,11 @@
 import fwlib
 
+from pprint import pprint
+
 
 def main():
   ip = '127.0.0.1'
   port = 8193
-
-  ret = fwlib.cnc_startupprocess(0, 'focas.log')
 
   print('connecting to machine at {}:{}...'.format(ip, port))
   ret, libh = fwlib.cnc_allclibhndl3(ip, port, 10)
@@ -15,17 +15,23 @@ def main():
 
   ret, cncids = fwlib.cnc_rdcncid(libh)
 
-  #mask = 0xffffffff
-  #cncids = [cncids[0] & mask, cncids[0] >> 32 & mask, cncids[1] & mask, cncids[1] >> 32 & mask]
-  #print(cncids)
-  cncids = '-'.join([f'{v:08x}' for v in cncids])
-  print(f'machine id: {cncids}')
+  machine_id = '-'.join([f'{v:08x}' for v in cncids])
+  print(f'{machine_id=}')
 
   ret, sysinfo = fwlib.cnc_sysinfo(libh);
-  print(sysinfo)
+  pprint(sysinfo)
+
+  ret, axes = fwlib.cnc_rdaxisname(libh);
+  print(f'{axes=}')
+
+  # class of data, kinds of data, num of axis
+  ret, axisdata = fwlib.cnc_rdaxisdata(libh, 1, [0, 1, 2, 3]);
+  pprint(axisdata)
+
+  ret, axisdata = fwlib.cnc_rdaxisdata(libh, 2, [0, 1, 2]);
+  pprint(axisdata)
 
   fwlib.cnc_freelibhndl(libh)
-  fwlib.cnc_exitprocess()
 
 
 if __name__ == '__main__':

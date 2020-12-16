@@ -1,4 +1,8 @@
 __pycache__/
+build/
+dist/
+env/
+fwlib.egg-info/
 libfwlib32*
 _fwlib.so
 fwlib.py
