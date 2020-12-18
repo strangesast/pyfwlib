@@ -25,11 +25,24 @@ def main():
   print(f'{axes=}')
 
   # class of data, kinds of data, num of axis
+  # position data, [abs, mach, rel, dist to go]
   ret, axisdata = fwlib.cnc_rdaxisdata(libh, 1, [0, 1, 2, 3]);
-  pprint(axisdata)
-
+  # servo data, [load, load current %, load current amps]
   ret, axisdata = fwlib.cnc_rdaxisdata(libh, 2, [0, 1, 2]);
-  pprint(axisdata)
+
+  ret, (max_valid_fig, inprec, outprec) = fwlib.cnc_getfigure(libh, 0)
+
+  ret, exeprgname = fwlib.cnc_exeprgname(libh)
+  print(exeprgname)
+
+  ret, exeprg_path = fwlib.cnc_exeprgname2(libh)
+  print(f'{exeprg_path=}')
+
+  ret, opmsg = fwlib.cnc_rdopmsg(libh)
+  pprint(opmsg)
+
+  ret, statinfo = fwlib.cnc_statinfo(libh)
+  pprint(statinfo)
 
   fwlib.cnc_freelibhndl(libh)
 

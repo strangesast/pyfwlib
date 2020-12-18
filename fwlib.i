@@ -10,6 +10,11 @@ typedef struct odbaxdt_t {
   int16_t reserve;
 } ODBAXDT_T ;
 
+typedef struct odbexeprg_t {
+  char     name[36];     /* running program name */
+  uint32_t o_num;        /* running program number */
+} ODBEXEPRG_T;
+
 static PyStructSequence_Field axdata_fields[] = {
   {"name", "axis name"},
   {"data", "position data"},
@@ -36,17 +41,72 @@ static PyStructSequence_Field sysinfo_fields[] = {
   {"mt_type", "M/T/TT"},
   {"series", "series NO."},
   {"version", "version NO."},
-  {"axes", "axis number"}
+  {"axes", "axis number"},
+  NULL
 };
 
 static PyStructSequence_Desc sysinfo_desc = {
-    "sysinfo",
-    NULL,
-    sysinfo_fields,
-    7
+  "sysinfo",
+  NULL,
+  sysinfo_fields,
+  7
 };
 
 static PyTypeObject SysinfoType = {0};
+
+static PyStructSequence_Field odbexeprg_fields[] = {
+  {"name", "running program name"},
+  {"o_num", "running program number"},
+  NULL
+};
+
+static PyStructSequence_Desc odbexeprg_desc = {
+  "odbexeprg",
+  NULL,
+  odbexeprg_fields,
+  2
+};
+
+static PyTypeObject OdbexeprgType = {0};
+
+static PyStructSequence_Field opmsg_fields[] = {
+  {"datano", "operator's message number"},
+  {"type", "operator's message type"},
+  {"char_num", "message string length"},
+  {"data", "operator's message string"},
+  NULL
+};
+
+static PyStructSequence_Desc opmsg_desc = {
+  "opmsg",
+  NULL,
+  opmsg_fields,
+  4
+};
+
+static PyTypeObject OpmsgType = {0};
+
+static PyStructSequence_Field odbst_fields[] = {
+  {"hdck", "handl retrace status"},
+  {"tmmode", "T/M mode"},
+  {"aut", "selected automatic mode"},
+  {"run", "running status"},
+  {"motion", "axis, dwell status"},
+  {"mstb", "m, s, t, b status"},
+  {"emergency", "emergency stop status"},
+  {"alarm", "alarm status"},
+  {"edit", "editting status"},
+  NULL
+};
+
+static PyStructSequence_Desc odbst_desc = {
+  "odbst",
+  NULL,
+  odbst_fields,
+  8
+};
+
+static PyTypeObject OdbstType = {0};
 
 %}
 %include typemaps.i
@@ -61,6 +121,9 @@ void deinit()
 %init %{
   PyStructSequence_InitType(&AxdataType, &axdata_desc);
   PyStructSequence_InitType(&SysinfoType, &sysinfo_desc);
+  PyStructSequence_InitType(&OdbexeprgType, &odbexeprg_desc);
+  PyStructSequence_InitType(&OpmsgType, &opmsg_desc);
+  PyStructSequence_InitType(&OdbstType, &odbst_desc);
   cnc_startupprocess(0, 'focas.log');
   atexit(deinit);
 %}
@@ -218,10 +281,142 @@ void deinit()
   if ($4) free($4);
 %}
 
+%typemap(in, numinputs=0) (short *valid_fig, short *dec_fig_in, short *dec_fig_out) %{
+  short cnt = 0;
+  short a[MAX_AXIS] = {0};
+  short b[MAX_AXIS] = {0};
+  $1 = &cnt;
+  $2 = a;
+  $3 = b;
+%}
 
+%typemap(argout) (short *valid_fig, short *dec_fig_in, short *dec_fig_out) %{
+  PyObject *o = PyTuple_New(3);
+  PyObject *oo;
+  int size = *$1;
+
+  oo = PyLong_FromLong(size);
+  PyTuple_SetItem(o, 0, oo);
+
+  PyObject *oa = PyTuple_New(MAX_AXIS);
+  PyObject *ob = PyTuple_New(MAX_AXIS);
+
+  for (int i = 0; i < MAX_AXIS; i++) {
+    oo = PyLong_FromLong($2[i]);
+    PyTuple_SetItem(oa, i, oo);
+    oo = PyLong_FromLong($3[i]);
+    PyTuple_SetItem(ob, i, oo);
+  }
+  PyTuple_SetItem(o, 1, oa);
+  PyTuple_SetItem(o, 2, ob);
+
+  $result = SWIG_Python_AppendOutput($result, o);
+%}
+
+
+%typemap(in, numinputs=0) (ODBEXEPRG *exeprg) %{
+  ODBEXEPRG_T temp;
+  $1 = (ODBEXEPRG *) &temp;
+%}
+
+%typemap(argout) (ODBEXEPRG *exeprg) %{
+  ODBEXEPRG_T *res = (ODBEXEPRG_T *) $1;
+  PyObject *o = PyStructSequence_New(&OdbexeprgType);
+  PyObject *oo;
+
+  oo = PyUnicode_FromString(res->name);
+  PyStructSequence_SetItem(o, 0, oo);
+
+  oo = PyLong_FromLong(res->o_num);
+  PyStructSequence_SetItem(o, 1, oo);
+
+  $result = SWIG_Python_AppendOutput($result, o);
+%}
+
+%typemap(in, numinputs=0) (char *path_name) %{
+  char temp[256] = "";
+  $1 = (char *) temp;
+%}
+
+%typemap(argout) (char *path_name) %{
+  PyObject *o = PyUnicode_FromString($1);
+  $result = SWIG_Python_AppendOutput($result, o);
+%}
+
+%typemap(in, numinputs=0) (short type, short length, OPMSG *opmsg) %{
+  OPMSG temp = {0};
+  $1 = 0;       // may not be correct for all machines
+  $2 = 6 + 256; // have to read docs to understand this one
+  $3 = &temp;
+%}
+
+%typemap(argout) (short type, short length, OPMSG *opmsg) %{
+  PyObject *o = PyStructSequence_New(&OpmsgType);
+
+  PyObject *oo;
+
+  oo = PyLong_FromLong($3->datano);
+  PyStructSequence_SetItem(o, 0, oo);
+
+  oo = PyLong_FromLong($3->type);
+  PyStructSequence_SetItem(o, 1, oo);
+
+  oo = PyLong_FromLong($3->char_num);
+  PyStructSequence_SetItem(o, 2, oo);
+
+  oo = PyUnicode_FromString($3->data);
+  PyStructSequence_SetItem(o, 3, oo);
+
+  $result = SWIG_Python_AppendOutput($result, o);
+%}
+
+%typemap(in, numinputs=0) (ODBST *statinfo) %{
+  ODBST temp = {0};
+  $1 = &temp;
+%}
+
+%typemap(argout) (ODBST *statinfo) %{
+  PyObject *o = PyStructSequence_New(&OdbstType);
+
+  PyObject *oo;
+  oo = PyLong_FromLong($1->hdck);
+  PyStructSequence_SetItem(o, 0, oo);
+
+  oo = PyLong_FromLong($1->tmmode);
+  PyStructSequence_SetItem(o, 1, oo);
+
+  oo = PyLong_FromLong($1->aut);
+  PyStructSequence_SetItem(o, 2, oo);
+
+  oo = PyLong_FromLong($1->run);
+  PyStructSequence_SetItem(o, 3, oo);
+
+  oo = PyLong_FromLong($1->motion);
+  PyStructSequence_SetItem(o, 4, oo);
+
+  oo = PyLong_FromLong($1->mstb);
+  PyStructSequence_SetItem(o, 5, oo);
+
+  oo = PyLong_FromLong($1->emergency);
+  PyStructSequence_SetItem(o, 6, oo);
+
+  oo = PyLong_FromLong($1->alarm);
+  PyStructSequence_SetItem(o, 7, oo);
+
+  oo = PyLong_FromLong($1->edit);
+  PyStructSequence_SetItem(o, 8, oo);
+
+  $result = SWIG_Python_AppendOutput($result, o);
+%}
+ 
 short cnc_allclibhndl3(const char *ip, unsigned short port, long timeout, unsigned short *OUTPUT);
 short cnc_rdcncid(unsigned short libh, unsigned long *cncids);
 short cnc_sysinfo(unsigned short libh, ODBSYS *odbsys);
 short cnc_rdaxisname(unsigned short, short *axis_count, ODBAXISNAME *odbaxisname);
 short cnc_rdaxisdata(unsigned short, short cls, short* type, short num, short* len, ODBAXDT* axdata);
+short cnc_getfigure(unsigned short, short data_type, short *valid_fig, short *dec_fig_in, short *dec_fig_out) ;
+short cnc_exeprgname(unsigned short, ODBEXEPRG *exeprg);
+short cnc_exeprgname2(unsigned short, char *path_name);
+short cnc_rdopmsg(unsigned short, short type, short length, OPMSG *opmsg);
+short cnc_statinfo(unsigned short, ODBST *statinfo);
 short cnc_freelibhndl(unsigned short libh);
