@@ -7,3 +7,4 @@ libfwlib32*
 _fwlib.so
 fwlib.py
 fwlib_wrap.c
+swig*/

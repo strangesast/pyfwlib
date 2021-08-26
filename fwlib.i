@@ -124,7 +124,7 @@ void deinit()
   PyStructSequence_InitType(&OdbexeprgType, &odbexeprg_desc);
   PyStructSequence_InitType(&OpmsgType, &opmsg_desc);
   PyStructSequence_InitType(&OdbstType, &odbst_desc);
-  cnc_startupprocess(0, 'focas.log');
+  cnc_startupprocess(0, "focas.log");
   atexit(deinit);
 %}
 
