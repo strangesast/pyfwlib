@@ -313,6 +313,25 @@ void deinit()
   $result = SWIG_Python_AppendOutput($result, o);
 %}
 
+%typemap(in,numinputs=0) (unsigned long *num, double *data) %{
+  unsigned long temp2 = 1;
+  $1 = &temp2;
+  double temp3 = 0;
+  $2 = &temp3;
+%}
+%typemap(argout) (unsigned long *num, double *data) %{
+PyObject *o = PyTuple_New(2); 
+PyObject *oo;
+int num2 = *$1;
+float num3 = *$2;
+
+oo = PyLong_FromLong(num2);
+PyTuple_SetItem(o, 0, oo);
+oo = PyLong_FromLong(num3);
+PyTuple_SetItem(o, 1, oo);
+
+$result = SWIG_Python_AppendOutput($result, o);
+%}
 
 %typemap(in, numinputs=0) (ODBEXEPRG *exeprg) %{
   ODBEXEPRG_T temp;
@@ -420,3 +439,4 @@ short cnc_exeprgname2(unsigned short, char *path_name);
 short cnc_rdopmsg(unsigned short, short type, short length, OPMSG *opmsg);
 short cnc_statinfo(unsigned short, ODBST *statinfo);
 short cnc_freelibhndl(unsigned short libh);
+short cnc_rdmacror2(unsigned short, unsigned long s_no, unsigned long *num, double *data);
