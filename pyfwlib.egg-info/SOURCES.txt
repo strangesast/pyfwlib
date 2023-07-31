@@ -1,0 +1,9 @@
+LICENSE
+README.md
+fwlib.i
+setup.py
+pyfwlib.egg-info/PKG-INFO
+pyfwlib.egg-info/SOURCES.txt
+pyfwlib.egg-info/dependency_links.txt
+pyfwlib.egg-info/requires.txt
+pyfwlib.egg-info/top_level.txt
