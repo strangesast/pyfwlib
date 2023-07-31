@@ -31,3 +31,9 @@ ln -s extern/fwlib/libfwlib32-linux-x64.so.1.0.5 libfwlib32.so                  
 gcc -fPIC -shared fwlib_wrap.c -o _fwlib.so -L. -lpthread -lm -lfwlib32 -I/usr/local/include/python3.9 # compile python module
 LD_LIBRARY_PATH=. python3.9 test.py                                                                    # verify module works
 ```
+
+## build package
+(extended by tonejca)
+```
+python3 setup.py bdist_wheel sdist
+```
