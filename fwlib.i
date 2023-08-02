@@ -1,4 +1,4 @@
-%module fwlib
+%module pyfwlib
 %{
 #include "./extern/fwlib/fwlib32.h"
 typedef struct odbaxdt_t {
