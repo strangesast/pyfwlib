@@ -17,12 +17,12 @@ if not os.path.isfile(libpath):
     else:
         pass
     fname = f"libfwlib32-{plat}-{arch}.so.{version}"
-    print(f"{fname=}", f"{libpath=}")
+    # print(f"{fname=}", f"{libpath=}")
     os.symlink(fname, os.path.join(fwlib_dir, "libfwlib32.so"))
     os.symlink(fname, os.path.join(fwlib_dir, "libfwlib32.so.1"))
 
 setup(
-    name="fwlib",
+    name="pyfwlib",
     version="0.1",
     description="",
     ext_modules=[
