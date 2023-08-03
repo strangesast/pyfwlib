@@ -22,7 +22,7 @@ if not os.path.isfile(libpath):
     os.symlink(fname, os.path.join(fwlib_dir, "libfwlib32.so.1"))
 
 setup(
-    name="pyfwlib",
+    name="fwlib",
     version="0.1",
     description="",
     ext_modules=[
