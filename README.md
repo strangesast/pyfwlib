@@ -32,8 +32,7 @@ gcc -fPIC -shared fwlib_wrap.c -o _fwlib.so -L. -lpthread -lm -lfwlib32 -I/usr/l
 LD_LIBRARY_PATH=. python3.9 test.py                                                                    # verify module works
 ```
 
-## build package
-(extended by tonejca)
+## install apckage
 ```
-python3 setup.py bdist_wheel sdist
+pip3 install -e git+https://github.com/tonejca/pyfwlib.git@pyfanucable#egg=fwlib
 ```
