@@ -4,7 +4,7 @@
 
 ## I - Install package automatically
 ```
-pip3 install -e git+https://github.com/tonejca/pyfwlib.git@pyfanucable#egg=fwlib
+pip3 install -e git+https://github.com/tonejca/pyfwlib.git@swig#egg=fwlib
 ```
 
 ## II - Install library semi-automated  

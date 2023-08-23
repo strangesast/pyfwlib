@@ -8,7 +8,7 @@ if not os.path.isfile(libpath):
     plat = "linux"
     machine = platform.machine()
     version = "1.0.5"
-    if machine == "x86_64":
+    if machine == "x86_64" or "AMD64":
         arch = "x64"
     elif machine == "i386":
         arch = "x86"
