@@ -7,6 +7,8 @@ libpath = os.path.join(fwlib_dir, "libfwlib32.so")
 if not os.path.isfile(libpath):
     plat = "linux"
     machine = platform.machine()
+    print("machine")
+    print(machine)
     version = "1.0.5"
     if machine == "x86_64" or "AMD64":
         arch = "x64"
