@@ -7,8 +7,10 @@ libpath = os.path.join(fwlib_dir, "libfwlib32.so")
 if not os.path.isfile(libpath):
     plat = "linux"
     machine = platform.machine()
+    print("machine")
+    print(machine)
     version = "1.0.5"
-    if machine == "x86_64":
+    if machine == "x86_64" or "AMD64":
         arch = "x64"
     elif machine == "i386":
         arch = "x86"
@@ -17,12 +19,12 @@ if not os.path.isfile(libpath):
     else:
         pass
     fname = f"libfwlib32-{plat}-{arch}.so.{version}"
-    print(f"{fname=}", f"{libpath=}")
+    # print(f"{fname=}", f"{libpath=}")
     os.symlink(fname, os.path.join(fwlib_dir, "libfwlib32.so"))
     os.symlink(fname, os.path.join(fwlib_dir, "libfwlib32.so.1"))
 
 setup(
-    name="fwlib",
+    name="pyfwlib",
     version="0.1",
     description="",
     ext_modules=[
@@ -39,6 +41,7 @@ setup(
             runtime_library_dirs=[fwlib_dir],
         )
     ],
+    install_requires=["swig==4.1.1", "wheel==0.41.0", "setuptools==68.0.0",],
     # used to locate c header files
     include_dirs=[fwlib_dir],
     package_data={
